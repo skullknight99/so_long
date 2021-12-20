@@ -6,7 +6,7 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 14:12:31 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 15:39:06 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/20 17:37:26 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,32 +36,29 @@ char	**get_map(char *s)
 	return (ft_split(lines, '\n'));
 }
 
-void	printimg(t_vars *vars, char *s)
+void	printimages(t_vars *vars, char *s)
 {
 	vars->img = mlx_xpm_file_to_image(vars->mlx, s, &vars->b, &vars->d);
 	mlx_put_image_to_window(vars->mlx, vars->win, vars->img, vars->x, vars->y);
 	mlx_destroy_image(vars->mlx, vars->img);
 }
 
-void	printe(t_vars *vars, char c)
+void	printassets(t_vars *vars, char c)
 {
 	if (c == '1')
-		printimg(vars, "assets/wall.xpm");
+		printimages(vars, "assets/wall.xpm");
 	if (c == '0')
-		printimg(vars, "assets/empty.xpm");
+		printimages(vars, "assets/empty.xpm");
 	if (c == 'P')
 	{
-		printimg(vars, "assets/ryuk.xpm");
+		printimages(vars, "assets/ryuk.xpm");
 		vars->px = vars->x;
 		vars->py = vars->y;
 	}
 	if (c == 'C')
-	{
-		printimg(vars, "assets/apple.xpm");
-		vars->len++;
-	}
+		printimages(vars, "assets/apple.xpm");
 	if (c == 'E')
-		printimg(vars, "assets/exit.xpm");
+		printimages(vars, "assets/exit.xpm");
 }
 
 void	printmap(t_vars *vars, char **s)
@@ -76,7 +73,7 @@ void	printmap(t_vars *vars, char **s)
 		vars->x = 0;
 		while (s[i][j])
 		{
-			printe(vars, s[i][j]);
+			printassets(vars, s[i][j]);
 			vars->x += 30;
 			j++;
 		}

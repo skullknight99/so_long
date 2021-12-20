@@ -1,38 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   checkmap1.c                                        :+:      :+:    :+:   */
+/*   checkcomp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/18 14:20:09 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 16:57:12 by acmaghou         ###   ########.fr       */
+/*   Created: 2021/12/20 16:42:03 by acmaghou          #+#    #+#             */
+/*   Updated: 2021/12/20 17:43:56 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include"so_long.h"
+#include "so_long.h"
 
-int	checklen(char **s)
+void	countassets(t_vars *vars, char c)
 {
-	int	len;
+	if (c == 'P')
+		vars->player++;
+	if (c == 'C')
+		vars->col++;
+	if (c == 'E')
+		vars->exits++;
+}
+
+int	checkcomp(t_vars *vars, char **s)
+{
 	int	i;
 	int	j;
 
 	i = 0;
-	j = 0;
-	len = ft_strlen(s[0]);
 	while (s[i])
 	{
+		j = 0;
 		while (s[i][j])
 		{
+			countassets(vars, s[i][j]);
+			if (vars->exits > 0 && vars->player == 1 && vars->col > 0)
+				return (1);
 			j++;
 		}
-		if (j == len)
-		{
-			i++;
-		}
-		else
-			return (0);
+		i++;
 	}
-	return (1);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 13:39:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 13:39:58 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/20 15:47:28 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,49 +53,29 @@ size_t	ft_strlen(char *str)
 	return (i);
 }
 
-char	*ft_strchr(char *s, int c)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	int	i;
-
-	i = 0;
-	if (!s)
-		return (0);
-	while (s[i] != '\0')
-	{
-		if (s[i] == (char) c)
-			return (&s[i]);
-		i++;
-	}
-	return (0);
-}
-
-char	*ft_strjoin1(char *s1, char *s2)
-{
-	char	*s3;
+	char	*new;
 	int		i;
+	int		j;
+	int		o_len;
+	int		d_len;
 
+	o_len = ft_strlen(s1);
+	d_len = ft_strlen(s2);
+	new = malloc ((o_len + d_len + 1) * sizeof(char));
+	if (!new)
+		return (NULL);
 	i = 0;
-	if (!s1 || !s2)
-	{
-		return (NULL);
-	}
-	s3 = (char *)malloc(ft_strlen(s1) + ft_strlen(s2) + 1);
-	if (!s3)
-		return (NULL);
-	while (*s1)
-	{
-		s3[i] = *s1;
-		s1++;
-		i++;
-	}
-	while (*s2)
-	{
-		s3[i] = *s2;
-		s2++;
-		i++;
-	}
-	s3[i] = '\0';
-	return (s3);
+	j = 0;
+	while (i < o_len)
+		new[i++] = s1[j++];
+	j = 0;
+	while (j < d_len)
+		new[i++] = s2[j++];
+	new[i] = '\0';
+	free(s1);
+	return (new);
 }
 
 char	*ft_strdup(char *str)

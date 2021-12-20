@@ -6,13 +6,13 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 11:23:56 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 11:25:54 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/20 16:38:37 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"so_long.h"
 
-int	firstRow(char **s)
+int	first_row(char **s)
 {
 	int	i;
 
@@ -26,7 +26,7 @@ int	firstRow(char **s)
 	return (1);
 }
 
-int	lastRow(char **s, int a)
+int	last_row(char **s, int a)
 {
 	int	i;
 
@@ -41,7 +41,7 @@ int	lastRow(char **s, int a)
 	return (1);
 }
 
-int	firstGrid(char **s)
+int	first_grid(char **s)
 {
 	int	i;
 
@@ -55,7 +55,7 @@ int	firstGrid(char **s)
 	return (1);
 }
 
-int	lastGrid(char **s, int x)
+int	last_grid(char **s, int x)
 {
 	int	i;
 
@@ -72,9 +72,8 @@ int	lastGrid(char **s, int x)
 
 int	check_map(char **s, t_res *reso)
 {
-	if (firstRow(s) && lastRow(s, reso->y) && \
-		firstGrid(s) && lastGrid(s, reso->x))
-		return (1);
-	else
+	if (!(first_row(s) && last_row(s, reso->y) && \
+		first_grid(s) && last_grid(s, reso->x)))
 		return (0);
+	return (1);
 }

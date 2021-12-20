@@ -6,94 +6,118 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/18 13:51:52 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 13:51:54 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/18 17:40:43 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 
-char	*ft_strjoin(char *s1, char *s2)
+static size_t	strs_count(char *str, char c)
 {
-	size_t	s1_len;
-	size_t	s2_len;
-	char	*dest;
 	size_t	i;
-	size_t	j;
+	size_t	num;
 
-	if (s1 == NULL)
+	if (!c)
+		return (1);
+	i = 0;
+	num = 0;
+	while (str[i])
 	{
-		s1 = (char *)malloc(1 * sizeof(char));
-		s1[0] = '\0';
+		while (str[i] == c)
+			i++;
+		if (str[i])
+			num++;
+		while (str[i] && (str[i] != c))
+			i++;
 	}
-	i = -1;
-	j = 0;
-	s1_len = ft_strlen(s1);
-	s2_len = ft_strlen(s2);
-	dest = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (dest == NULL)
-		return (NULL);
-	while (++i < s1_len)
-		dest[i] = s1[i];
-	while (j <= s2_len)
-		dest[i++] = s2[j++];
-	free(s1);
-	return (dest);
+	return (num);
 }
 
-static size_t	ft_count_word(char const *s, char c)
+static size_t	next_slen(char *str, char c)
 {
-	int	lword;
-	int	words;
+	static int	i;
+	size_t		len;
 
-	lword = 0;
-	words = 0;
-	while (s[lword])
+	len = 0;
+	while (str[i])
 	{
-		if (s[lword] != c && (s[lword + 1] == c || s[lword + 1] == '\0'))
-			words++;
-		lword++;
+		if (str[i] == c)
+		{
+			while (str[i] == c)
+				i++;
+			break ;
+		}
+		len++;
+		i++;
 	}
-	return (words);
+	return (len);
 }
 
-static char	**free_word(char **s)
+static char	**generate(char *s, char **res, char c)
 {
-	int	i;
+	size_t	i;
+	size_t	arr;
+
+	arr = 0;
+	if (!c)
+	{
+		ft_memmove(res[0], s, ft_strlen(s));
+		res[1] = NULL;
+		return (res);
+	}
+	while (*s)
+	{
+		i = 0;
+		while (*s && *s != c)
+			res[arr][i++] = *(s++);
+		while (*s == c)
+			s++;
+		arr++;
+	}
+	res[arr] = NULL;
+	return (res);
+}
+
+int	allocate_res(char **res, char *s, char c)
+{
+	size_t	i;
+	size_t	len;
 
 	i = 0;
-	while (s[i])
-		free(s[i++]);
-	free (s);
-	return (NULL);
+	if (!res)
+		return (0);
+	while (i < strs_count(s, c))
+	{
+		len = next_slen((char *)s, c);
+		res[i++] = ft_calloc(len + 1, sizeof(char));
+		if (!(res + i))
+		{
+			while (i-- > 0)
+				free(res[i]);
+			return (0);
+		}
+	}
+	return (1);
 }
 
 char	**ft_split(char *s, char c)
 {
-	char	**word;
-	char	*tmp;
-	int		lwrd;
-	int		j;
+	char	**res;
 
-	j = 0;
 	if (!s)
 		return (NULL);
-	tmp = s;
-	word = malloc ((ft_count_word(s, c) + 1) * sizeof (char *));
-	if (!word)
-		return (NULL);
-	while (*s)
+	while (*s && *s == c)
+		s++;
+	if (!*s)
 	{
-		while (*s == c)
-			s++;
-		lwrd = 0;
-		while (s[lwrd] != c && s[lwrd])
-			lwrd++;
-		if (*s != c && *s)
-			word[j++] = ft_substr(s, 0, lwrd);
-		if ((!word[j - 1]) && *s)
-			return (free_word(word));
-		s += lwrd;
+		res = (char **)malloc(sizeof(char *));
+		res[0] = NULL;
+		return (res);
 	}
-	word[j] = NULL;
-	return (free(tmp), word);
+	res = (char **)malloc(sizeof(char *) * (strs_count(s, c) + 1));
+	if (!res)
+		return (NULL);
+	if (!allocate_res(res, s, c))
+		free(res);
+	return (generate(s, res, c));
 }

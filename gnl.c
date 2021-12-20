@@ -6,98 +6,94 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/24 08:37:29 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 15:38:36 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/20 11:58:38 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include"so_long.h"
 
-char	*ft_read(char *text, int fd)
+char	*str_ret(char *stc_arr)
 {
-	char	*buff;
-	int		n;
+	int	i;
 
-	buff = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (buff == NULL)
-		return (NULL);
-	n = 1;
-	while (!(ft_strchr(text, '\n')) && n != 0)
-	{
-		n = read(fd, buff, BUFFER_SIZE);
-		if (n == -1)
-		{
-			free(buff);
-			return (NULL);
-		}
-		buff[n] = '\0';
-		text = ft_strjoin(text, buff);
-	}
-	free(buff);
-	return (text);
-}
-
-char	*ft_just_a_line(char *text)
-{
-	char	*line;
-	size_t	len;
-	size_t	i;
-
-	len = 0;
-	if (text[0] == '\0')
-		return (NULL);
-	while (text[len] != '\n' && text[len] != '\0')
-		len++;
-	if (text[len] == '\n')
-		len++;
-	line = (char *)malloc(sizeof(char) * (len + 1));
-	if (line == NULL)
+	i = 0;
+	if (!stc_arr[i])
 		return (NULL);
 	i = 0;
-	while (i < len)
+	while (stc_arr[i] && stc_arr[i] != '\n')
+		i++;
+	return (ft_substr(stc_arr, 0, i + 1));
+}
+
+char	*str_remainder(char *stc_arr, char *s)
+{
+	char	*str;
+	int		i;
+
+	i = 0;
+	if (!stc_arr)
+		return (NULL);
+	while (stc_arr[i])
 	{
-		line[i] = text[i];
+		if (stc_arr[i] == '\n')
+		{
+			str = ft_substr(stc_arr, i + 1, ft_strlen(stc_arr));
+			free(stc_arr);
+			if (str[0] == '\n')
+			{
+				free(s);
+				printf("NEWLINE IN MAP!\n");
+				exit(0);
+			}
+			return (str);
+		}
 		i++;
 	}
-	line[i] = '\0';
-	return (line);
+	free (stc_arr);
+	return (NULL);
 }
 
-char	*ft_change_text(char *text)
+int	find_nl(char *s)
 {
-	char	*newtext;
-	size_t	len;
-	size_t	i;
+	int	i;
 
-	len = 0;
-	while (text[len] != '\n' && text[len] != '\0')
-		len++;
-	if (text[len] == '\0')
-	{
-		free(text);
-		return (NULL);
-	}
 	i = 0;
-	newtext = (char *)malloc(sizeof(char) * (ft_strlen(text) - len + 1));
-	if (newtext == NULL)
-		return (NULL);
-	while (text[len++] != '\0')
-		newtext[i++] = text[len];
-	newtext[i] = '\0';
-	free(text);
-	return (newtext);
+	if (!s)
+		return (0);
+	while (s[i])
+	{
+		if (s[i] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*text;
+	static char	*stc_arr;
+	char		*buffer;
 	char		*line;
+	int			i;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	line = NULL;
+	if (fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	text = ft_read(text, fd);
-	if (text == NULL)
-		return (NULL);
-	line = ft_just_a_line(text);
-	text = ft_change_text(text);
+	i = 1;
+	buffer = malloc(BUFFER_SIZE + 1);
+	while (!(find_nl(stc_arr)) && (i))
+	{
+		i = read(fd, buffer, BUFFER_SIZE);
+		if (i < 0)
+		{
+			free(buffer);
+			return (NULL);
+		}
+		buffer[i] = '\0';
+		stc_arr = ft_strjoin(stc_arr, buffer);
+	}
+	free(buffer);
+	line = str_ret(stc_arr);
+	stc_arr = str_remainder(stc_arr, line);
 	return (line);
 }

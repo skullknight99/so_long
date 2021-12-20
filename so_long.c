@@ -6,7 +6,7 @@
 /*   By: acmaghou <muteallfocus7@gmail.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/17 15:53:47 by acmaghou          #+#    #+#             */
-/*   Updated: 2021/12/18 15:43:05 by acmaghou         ###   ########.fr       */
+/*   Updated: 2021/12/20 17:54:39 by acmaghou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,9 @@ int	keys(int keycode, t_vars *vars)
 	{
 		mlx_destroy_window(vars->mlx, vars->win);
 		exit(0);
-		free_all(vars);
+		free_all_rows(vars);
 		return (0);
 	}
-	countmoves(vars);
 	return (0);
 }
 
@@ -43,7 +42,7 @@ int	grids(char **s)
 	return (i);
 }
 
-void	free_all(t_vars *vars)
+void	free_all_rows(t_vars *vars)
 {
 	int	i;
 
@@ -59,8 +58,8 @@ void	free_all(t_vars *vars)
 int	red_cross(int keycode, t_vars *vars)
 {
 	(void)keycode;
-	free_all(vars);
 	exit(0);
+	free_all_rows(vars);
 	return (0);
 }
 
@@ -74,19 +73,19 @@ int	main(int ac, char **av)
 	reso.x = ft_strlen(vars.s[0]);
 	reso.y = grids(vars.s);
 	if (!check_map(vars.s, &reso) || !checklen(vars.s))
-	{
-		printf("ERROR MAP");
-		return (free_all(&vars), 0);
-	}
-	vars.len = -1;
+		return (printf("ERROR MAP"), free_all_rows(&vars), 0);
+	if (!checkcomp(&vars, vars.s))
+		return (printf("ERROR\nLack of map elems"), free_all_rows(&vars), 0);
+	vars.col = -1;
 	vars.h = reso.y * 30;
 	vars.w = reso.x * 30;
 	vars.mlx = mlx_init();
 	vars.win = mlx_new_window(vars.mlx, reso.x * 30, reso.y * 30, "Apples");
 	printmap(&vars, vars.s);
+	printf("count : 0\n");
 	vars.x = vars.px;
 	vars.y = vars.py;
-	mlx_hook(vars.win, 17, 1L<<2, red_cross, &vars);
-	mlx_hook(vars.win, 2, 1L<<0, keys, &vars);
+	mlx_hook(vars.win, 17, 1L << 2, red_cross, &vars);
+	mlx_hook(vars.win, 2, 1L << 0, keys, &vars);
 	mlx_loop(vars.mlx);
 }
